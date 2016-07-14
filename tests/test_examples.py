@@ -63,9 +63,21 @@ class ExamplesTests(WithTmpDir, ZiplineTestCase):
                 'ZIPLINE_ROOT': self.tmpdir.getpath('example_data/root'),
             },
         )
+
+        try:
+            expected = self.expected_perf[example_name]
+        except KeyError:
+            self.fail(
+                "No expected results found for example [{name}]. "
+                "To rebuild examples, run:\n\n"
+                "   $ ./tests/resources/rebuild_example_data\n".format(
+                    name=example_name,
+                )
+            )
+
         assert_equal(
             actual_perf[examples._cols_to_check],
-            self.expected_perf[example_name][examples._cols_to_check],
+            expected[examples._cols_to_check],
             # There is a difference in the datetime columns in pandas
             # 0.16 and 0.17 because in 16 they are object and in 17 they are
             # datetime[ns, UTC]. We will just ignore the dtypes for now.
